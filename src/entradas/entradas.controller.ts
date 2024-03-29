@@ -4,6 +4,7 @@ import { CreateEntradaDto } from './dto/create-entrada.dto';
 import { UpdateEntradaDto } from './dto/update-entrada.dto';
 import { ValidRoles } from 'src/user/interfaces';
 import { Auth } from 'src/user/decorator';
+import { HistorialDto } from './dto/historial.dto';
 
 @Controller('entradas')
 export class EntradasController {
@@ -12,6 +13,11 @@ export class EntradasController {
   @Get('total')
   async total() {
     return this.entradasService.total();
+  }
+
+  @Post('historial')
+  async historial(@Body() historialDto: HistorialDto){
+    return this.entradasService.historial(historialDto);
   }
 
   @Post()

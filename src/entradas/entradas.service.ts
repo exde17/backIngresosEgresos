@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Entrada } from './entities/entrada.entity';
 import { Repository } from 'typeorm';
 import { Salida } from 'src/salidas/entities/salida.entity';
+import { HistorialDto } from './dto/historial.dto';
 
 @Injectable()
 export class EntradasService {
@@ -138,6 +139,41 @@ export class EntradasService {
         message: 'Error al obtener el total de entradas',
         error: error.message,
       }
+    }
+  }
+
+  async historial(historialDto: HistorialDto){
+    try {
+      const { mes, año } = historialDto;
+      const startDate = new Date(año, mes - 1, 1);
+      const endDate = new Date(año, mes , 0);
+
+      const entradas = await this.entradaRepository.createQueryBuilder('entrada')
+        .select('SUM(entrada.valor)', 'total')
+        .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .getRawOne();
+
+      const salidas = await this.salidaRepository.createQueryBuilder('salida')
+        .select('SUM(salida.valor)', 'total')
+        .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .getRawOne();
+
+      const total = entradas.total - salidas.total;
+
+      return {
+        message: 'Historial obtenido con éxito',
+        data: {
+          entradas: entradas.total,
+          salidas: salidas.total,
+          total,
+        },
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener el historial',
+        error: error.message,
+      }
+      
     }
   }
   // total
