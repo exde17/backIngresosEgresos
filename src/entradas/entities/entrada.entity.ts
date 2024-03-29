@@ -16,11 +16,15 @@ nombre: string;
   })
   fecha: Date
 
-@Column()
-mes: string;
+@Column('text',{
+  nullable: true
+})
+mes?: string;
 
-@Column()
-año: string;
+@Column('text',{
+  nullable: true
+})
+año?: string;
 
 @Column('numeric',{
     nullable: false,

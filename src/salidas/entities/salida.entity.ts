@@ -16,10 +16,14 @@ export class Salida {
       })
       fecha: Date
     
-    @Column()
+    @Column('text',{
+        nullable: true
+    })
     mes: string;
     
-    @Column()
+    @Column('text',{
+        nullable: true
+    })
     año: string;
     
     @Column('numeric',{

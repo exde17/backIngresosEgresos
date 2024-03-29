@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, IsString } from "class-validator";
+import { IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateSalidaDto {
 
@@ -9,10 +9,12 @@ export class CreateSalidaDto {
     readonly fecha: string;
 
     @IsString()
-    readonly mes: string;
+    @IsOptional()
+    readonly mes?: string;
 
     @IsString()
-    readonly año: string;
+    @IsOptional()
+    readonly año?: string;
 
     @IsNumber()
     readonly valor: number;

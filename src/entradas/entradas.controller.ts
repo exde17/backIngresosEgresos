@@ -1,34 +1,48 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
 import { EntradasService } from './entradas.service';
 import { CreateEntradaDto } from './dto/create-entrada.dto';
 import { UpdateEntradaDto } from './dto/update-entrada.dto';
+import { ValidRoles } from 'src/user/interfaces';
+import { Auth } from 'src/user/decorator';
 
 @Controller('entradas')
 export class EntradasController {
   constructor(private readonly entradasService: EntradasService) {}
 
+  @Get('total')
+  async total() {
+    return this.entradasService.total();
+  }
+
   @Post()
-  create(@Body() createEntradaDto: CreateEntradaDto) {
+  // @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async create(@Body() createEntradaDto: CreateEntradaDto) {
     return this.entradasService.create(createEntradaDto);
   }
 
   @Get()
-  findAll() {
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async findAll() {
     return this.entradasService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.entradasService.findOne(+id);
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.entradasService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEntradaDto: UpdateEntradaDto) {
-    return this.entradasService.update(+id, updateEntradaDto);
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateEntradaDto: UpdateEntradaDto) {
+    return this.entradasService.update(id, updateEntradaDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.entradasService.remove(+id);
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    return this.entradasService.remove(id);
   }
+
+  
 }
