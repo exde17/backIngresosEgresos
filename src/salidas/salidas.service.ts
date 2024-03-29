@@ -4,16 +4,20 @@ import { UpdateSalidaDto } from './dto/update-salida.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Salida } from './entities/salida.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class SalidasService {
   constructor(
     @InjectRepository(Salida)
     private readonly salidaRepository: Repository<Salida>,
-  ) {}
-  async create(createSalidaDto: CreateSalidaDto) {
+  ) { }
+  async create(createSalidaDto: CreateSalidaDto, user: User) {
     try {
-      const salida = this.salidaRepository.create(createSalidaDto);
+      const salida = this.salidaRepository.create({
+        userid: user.id,
+        ...createSalidaDto,
+      });
       await this.salidaRepository.save(salida);
 
       return {
@@ -25,7 +29,7 @@ export class SalidasService {
         message: 'Error al crear la salida',
         error: error.message,
       }
-      
+
     }
   }
 
@@ -37,7 +41,7 @@ export class SalidasService {
         message: 'Error al obtener las salidas',
         error: error.message,
       }
-      
+
     }
   }
 
@@ -47,14 +51,14 @@ export class SalidasService {
         where: {
           id
         }
-      
+
       });
     } catch (error) {
       return {
         message: 'Error al obtener la salida',
         error: error.message,
       }
-      
+
     }
   }
 
@@ -64,7 +68,7 @@ export class SalidasService {
         where: {
           id
         }
-      
+
       });
       this.salidaRepository.merge(salida, updateSalidaDto);
       await this.salidaRepository.save(salida);
@@ -77,7 +81,7 @@ export class SalidasService {
         message: 'Error al actualizar la salida',
         error: error.message,
       }
-      
+
     }
   }
 
@@ -87,7 +91,7 @@ export class SalidasService {
         where: {
           id
         }
-      
+
       });
       await this.salidaRepository.remove(salida);
       return {
@@ -97,7 +101,8 @@ export class SalidasService {
       return {
         message: 'Error al eliminar la salida',
         error: error.message,
-      
+
+      }
     }
   }
-}}
+}

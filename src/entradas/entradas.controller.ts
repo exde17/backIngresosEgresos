@@ -3,27 +3,79 @@ import { EntradasService } from './entradas.service';
 import { CreateEntradaDto } from './dto/create-entrada.dto';
 import { UpdateEntradaDto } from './dto/update-entrada.dto';
 import { ValidRoles } from 'src/user/interfaces';
-import { Auth } from 'src/user/decorator';
+import { Auth, GetUser } from 'src/user/decorator';
 import { HistorialDto } from './dto/historial.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Controller('entradas')
 export class EntradasController {
   constructor(private readonly entradasService: EntradasService) {}
 
+  //el balance del mes actual
   @Get('total')
-  async total() {
-    return this.entradasService.total();
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async total(
+    @GetUser() user: User
+  ) {
+    return this.entradasService.total(user);
   }
 
+  //el balance del mes y año que se elija
   @Post('historial')
-  async historial(@Body() historialDto: HistorialDto){
-    return this.entradasService.historial(historialDto);
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async historial(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+    ){
+    return this.entradasService.historial(historialDto,user);
+  }
+
+  //sumas entradas del mes actual
+  @Get('totalEntradasMesActual')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalEntradas(
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalEntradasMesActual(user);
+  }
+
+  //sumas salidas del mes actual
+  @Get('totalSalidasMesActual')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalSalidas(
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalSalidasMesActual(user);
+  }
+
+  //sumas entradas del mes y año que se elija
+  @Post('totalEntradasHistorial')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalEntradasHistorial(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalEntradasHistorial(historialDto,user);
+  }
+
+  //sumas salidas del mes y año que se elija
+  @Post('totalSalidasHistorial')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalSalidasHistorial(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalSalidasHistorial(historialDto,user);
   }
 
   @Post()
-  // @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
-  async create(@Body() createEntradaDto: CreateEntradaDto) {
-    return this.entradasService.create(createEntradaDto);
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async create(
+    @Body() createEntradaDto: CreateEntradaDto,
+    @GetUser() user: User
+    ) {
+      // console.log(user.id)
+    return this.entradasService.create(createEntradaDto,user);
   }
 
   @Get()

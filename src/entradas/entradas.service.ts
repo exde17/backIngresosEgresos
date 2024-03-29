@@ -6,6 +6,7 @@ import { Entrada } from './entities/entrada.entity';
 import { Repository } from 'typeorm';
 import { Salida } from 'src/salidas/entities/salida.entity';
 import { HistorialDto } from './dto/historial.dto';
+import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class EntradasService {
@@ -15,9 +16,13 @@ export class EntradasService {
     @InjectRepository(Salida)
     private readonly salidaRepository: Repository<Salida>,
   ) {}
-  async create(createEntradaDto: CreateEntradaDto) {
+  async create(createEntradaDto: CreateEntradaDto, user: User) {
+    // console.log(user.id)
     try {
-      const entrada = this.entradaRepository.create(createEntradaDto);
+      const entrada = this.entradaRepository.create({
+        userid: user.id,
+        ...createEntradaDto
+      });
       await this.entradaRepository.save(entrada);
 
       return {
@@ -108,7 +113,7 @@ export class EntradasService {
   }
   }
 
-  async total() {
+  async total(user: User) {
     try {
       const now = new Date();
       const month = now.getMonth();
@@ -120,17 +125,19 @@ export class EntradasService {
       const entradas = await this.entradaRepository.createQueryBuilder('entrada')
         .select('SUM(entrada.valor)', 'total')
         .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('entrada.userid = :userid', { userid: user.id })
         .getRawOne();
   
       const salidas = await this.salidaRepository.createQueryBuilder('salida')
         .select('SUM(salida.valor)', 'total')
         .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('salida.userid = :userid', { userid: user.id })
         .getRawOne();
         
       const total = entradas.total - salidas.total;
   
       return {
-        message: 'Total de entradas obtenido con éxito',
+        message: 'balance obtenido con éxito',
         data: total,
       }
     }
@@ -142,7 +149,7 @@ export class EntradasService {
     }
   }
 
-  async historial(historialDto: HistorialDto){
+  async historial(historialDto: HistorialDto, user: User){
     try {
       const { mes, año } = historialDto;
       const startDate = new Date(año, mes - 1, 1);
@@ -151,11 +158,13 @@ export class EntradasService {
       const entradas = await this.entradaRepository.createQueryBuilder('entrada')
         .select('SUM(entrada.valor)', 'total')
         .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('entrada.userid = :userid', { userid: user.id })
         .getRawOne();
 
       const salidas = await this.salidaRepository.createQueryBuilder('salida')
         .select('SUM(salida.valor)', 'total')
         .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('salida.userid = :userid', { userid: user.id })
         .getRawOne();
 
       const total = entradas.total - salidas.total;
@@ -176,35 +185,114 @@ export class EntradasService {
       
     }
   }
-  // total
-//   async total() {
-//     try {
-//       const entradas = await this.entradaRepository.createQueryBuilder('entrada')
-//         .select('SUM(entrada.valor)', 'total')
-//         .getRawOne();
+  
+  //sumas entradas del mes actual
+  async totalEntradasMesActual(user: User) {
+    try {
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+  
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0);
+  
+      const entradas = await this.entradaRepository.createQueryBuilder('entrada')
+        .select('SUM(entrada.valor)', 'total')
+        .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('entrada.userid = :userid', { userid: user.id })
+        .getRawOne();
+  
+      return {
+        message: 'Total de entradas obtenido con éxito',
+        data: entradas.total,
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener el total de entradas',
+        error: error.message,
+      }
+      
+    }
+  }
 
-//         console.log('entradas: ',entradas);
+  //sumas salidas del mes actual
+  async totalSalidasMesActual(user: User) {
+    try {
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+  
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0);
+  
+      const salidas = await this.salidaRepository.createQueryBuilder('salida')
+        .select('SUM(salida.valor)', 'total')
+        .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('salida.userid = :userid', { userid: user.id })
+        .getRawOne();
+  
+      return {
+        message: 'Total de salidas obtenido con éxito',
+        data: salidas.total,
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener el total de salidas',
+        error: error.message,
+      }
+      
+    }
+  }
 
-//       const salidas = await this.entradaRepository.createQueryBuilder('salida')
-//         .select('SUM(salida.valor)', 'total')
-//         .getRawOne();
+  //sumas entradas del mes y año que se elija
+  async totalEntradasHistorial(historialDto: HistorialDto, user: User) {
+    try {
+      const { mes, año } = historialDto;
+      const startDate = new Date(año, mes - 1, 1);
+      const endDate = new Date(año, mes , 0);
 
-//         console.log('salidas: ',salidas);
-        
-//       const total = entradas.total - salidas.total;
+      const entradas = await this.entradaRepository.createQueryBuilder('entrada')
+        .select('SUM(entrada.valor)', 'total')
+        .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('entrada.userid = :userid', { userid: user.id })
+        .getRawOne();
 
-//       console.log('total: ',total);
+      return {
+        message: 'Total de entradas obtenido con éxito',
+        data: entradas.total,
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener el total de entradas',
+        error: error.message,
+      }
+      
+    }
+  }
 
-//       return {
-//         message: 'Total de entradas obtenido con éxito',
-//         data: total,
-//       }
-//     }
-//     catch (error) {
-//       return {
-//         message: 'Error al obtener el total de entradas',
-//         error: error.message,
-//       }
-//     }
-// }
+  //sumas salidas del mes y año que se elija
+  async totalSalidasHistorial(historialDto: HistorialDto, user: User) {
+    try {
+      const { mes, año } = historialDto;
+      const startDate = new Date(año, mes - 1, 1);
+      const endDate = new Date(año, mes , 0);
+
+      const salidas = await this.salidaRepository.createQueryBuilder('salida')
+        .select('SUM(salida.valor)', 'total')
+        .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('salida.userid = :userid', { userid: user.id })
+        .getRawOne();
+
+      return {
+        message: 'Total de salidas obtenido con éxito',
+        data: salidas.total,
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener el total de salidas',
+        error: error.message,
+      }
+      
+    }
+  }
 }

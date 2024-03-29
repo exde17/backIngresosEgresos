@@ -1,4 +1,5 @@
 import { IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
+import { User } from "src/user/entities/user.entity";
 
 export class CreateEntradaDto {
 
@@ -18,5 +19,8 @@ export class CreateEntradaDto {
 
     @IsNumber()
     readonly valor: number;
+
+    // @IsString()
+    readonly userid: User;
 
 }

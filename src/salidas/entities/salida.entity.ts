@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { User } from "src/user/entities/user.entity";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity('salidas')
 export class Salida {
@@ -45,5 +46,7 @@ export class Salida {
       })
       updateAt: Date
     
+      @ManyToOne(() => User, user => user.salidas)
+        userid: User;
 
 }

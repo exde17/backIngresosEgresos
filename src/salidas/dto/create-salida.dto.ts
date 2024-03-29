@@ -1,4 +1,5 @@
 import { IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
+import { User } from "src/user/entities/user.entity";
 
 export class CreateSalidaDto {
 
@@ -18,4 +19,6 @@ export class CreateSalidaDto {
 
     @IsNumber()
     readonly valor: number;
+
+    readonly userid: User;
 }

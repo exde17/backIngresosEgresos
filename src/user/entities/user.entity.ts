@@ -6,8 +6,11 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import { Entrada } from 'src/entradas/entities/entrada.entity';
+import { Salida } from 'src/salidas/entities/salida.entity';
 
 @Entity({
   name: 'users',
@@ -78,4 +81,10 @@ export class User {
   emailToLowerCaseOnUpdate() {
     this.emailToLowerCase();
   }
+
+  @OneToMany(() => Entrada, (entrada) => entrada.userid)
+  entradas: Entrada[];
+
+  @OneToMany(() => Salida, (salida) => salida.userid)
+  salidas: Salida[];
 }
