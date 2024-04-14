@@ -3,7 +3,7 @@ import { CreateEntradaDto } from './dto/create-entrada.dto';
 import { UpdateEntradaDto } from './dto/update-entrada.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Entrada } from './entities/entrada.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { Salida } from 'src/salidas/entities/salida.entity';
 import { HistorialDto } from './dto/historial.dto';
 import { User } from 'src/user/entities/user.entity';
@@ -37,6 +37,36 @@ export class EntradasService {
       
     }
   }
+
+    //traer todas las entradas del mes actual
+    async findAllMesActual(user: User) {
+      try {
+        const now = new Date();
+        const month = now.getMonth();
+        const year = now.getFullYear();
+    
+        const startDate = new Date(year, month, 1);
+        const endDate = new Date(year, month + 1, 0);
+    
+        const entradas = await this.entradaRepository.createQueryBuilder('entrada')
+          // .select('SUM(entrada.valor)', 'total')
+          .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+          .andWhere('entrada.userid = :userid', { userid: user.id })
+          .getRawMany();
+  
+        return {
+          message: "Consulta exitosa",
+          data: entradas,
+        };
+  
+      } catch (error) {
+        return {
+          message: 'Error al obtener las entradas',
+          error: error.message,
+        }
+        
+      }
+    }
 
   async findAll() {
     try {
@@ -127,14 +157,20 @@ export class EntradasService {
         .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
         .andWhere('entrada.userid = :userid', { userid: user.id })
         .getRawOne();
+
+        console.log('entradas: ',entradas)
   
       const salidas = await this.salidaRepository.createQueryBuilder('salida')
         .select('SUM(salida.valor)', 'total')
         .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
         .andWhere('salida.userid = :userid', { userid: user.id })
         .getRawOne();
+
+        console.log('salidas: ',salidas)
         
       const total = entradas.total - salidas.total;
+
+      console.log('total', total)
   
       return {
         message: 'balance obtenido con éxito',

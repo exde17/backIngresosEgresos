@@ -6,16 +6,16 @@ export class CreateEntradaDto {
     @IsString()
     readonly nombre: string;
 
-    @IsDateString()
-    readonly fecha: string;
+    // @IsDateString()
+    // readonly fecha: string;
 
-    @IsString()
-    @IsOptional()
-    readonly mes?: string;
+    // @IsString()
+    // @IsOptional()
+    // readonly mes?: string;
 
-    @IsString()
-    @IsOptional()
-    readonly año?: string;
+    // @IsString()
+    // @IsOptional()
+    // readonly año?: string;
 
     @IsNumber()
     readonly valor: number;

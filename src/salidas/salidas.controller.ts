@@ -8,7 +8,7 @@ import { User } from 'src/user/entities/user.entity';
 
 @Controller('salidas')
 export class SalidasController {
-  constructor(private readonly salidasService: SalidasService) {}
+  constructor(private readonly salidasService: SalidasService) {} 
 
   @Post()
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
@@ -23,6 +23,15 @@ export class SalidasController {
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
   async findAll() {
     return this.salidasService.findAll();
+  }
+
+  //traer todas las salidas de un usuario y un mes en especifico
+  @Get('findAllMesActual')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalEntradas(
+    @GetUser() user: User
+  ) {
+    return this.salidasService.findAllSalidaMesActual(user);
   }
 
   @Get(':id')

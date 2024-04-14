@@ -105,4 +105,34 @@ export class SalidasService {
       }
     }
   }
+
+  //traer todas las salidas de un usuario y un mes en especifico
+  async findAllSalidaMesActual(user: User) {
+    try {
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+  
+      const startDate = new Date(year, month, 1);
+      const endDate = new Date(year, month + 1, 0);
+  
+      const salidas = await this.salidaRepository.createQueryBuilder('salida')
+        // .select('SUM(salida.valor)', 'total')
+        .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('salida.userid = :userid', { userid: user.id })
+        .getRawMany();
+
+      return {
+        message: "Consulta exitosa",
+        data: salidas,
+      };
+
+    } catch (error) {
+      return {
+        message: 'Error al obtener las salidas',
+        error: error.message,
+      }
+      
+    }
+  }
 }

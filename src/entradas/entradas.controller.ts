@@ -20,6 +20,15 @@ export class EntradasController {
     return this.entradasService.total(user);
   }
 
+  //sumas salidas del mes actual
+  @Get('totalSalidasMesActual')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalSalidas(
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalSalidasMesActual(user);
+  }
+
   //el balance del mes y año que se elija
   @Post('historial')
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
@@ -39,14 +48,15 @@ export class EntradasController {
     return this.entradasService.totalEntradasMesActual(user);
   }
 
-  //sumas salidas del mes actual
-  @Get('totalSalidasMesActual')
+  //trae todas las entradas del mes actual
+  @Get('findAllMesActual')
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
-  async totalSalidas(
+  async findAllMesActual(
     @GetUser() user: User
   ) {
-    return this.entradasService.totalSalidasMesActual(user);
+    return this.entradasService.findAllMesActual(user);
   }
+
 
   //sumas entradas del mes y año que se elija
   @Post('totalEntradasHistorial')
