@@ -12,10 +12,6 @@ id: string;
 })
 nombre: string;
 
-  // @Column('timestamp', {
-  //   nullable: false,
-  // })
-  // fecha: Date
   @CreateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
@@ -23,27 +19,10 @@ nombre: string;
   })
   fecha: Date
 
-// @Column('text',{
-//   nullable: true
-// })
-// mes?: string;
-
-// @Column('text',{
-//   nullable: true
-// })
-// año?: string;
-
 @Column('numeric',{
     nullable: false,
 })
 valor: number;
-
-// @CreateDateColumn({
-//     type: 'timestamptz',
-//     default: () => 'CURRENT_TIMESTAMP',
-//     name: 'created_at',
-//   })
-//   createAt: Date
 
   @UpdateDateColumn({
     type: 'timestamptz',
