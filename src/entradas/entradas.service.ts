@@ -3,7 +3,7 @@ import { CreateEntradaDto } from './dto/create-entrada.dto';
 import { UpdateEntradaDto } from './dto/update-entrada.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Entrada } from './entities/entrada.entity';
-import { Between, Repository } from 'typeorm';
+import { Between, Equal, Repository } from 'typeorm';
 import { Salida } from 'src/salidas/entities/salida.entity';
 import { HistorialDto } from './dto/historial.dto';
 import { User } from 'src/user/entities/user.entity';
@@ -326,6 +326,114 @@ export class EntradasService {
     } catch (error) {
       return {
         message: 'Error al obtener el total de salidas',
+        error: error.message,
+      }
+      
+    }
+  }
+
+  //trae todas las entradas y salidas del mes y año que se escoja
+  async findAllEntradasHistorial(historialDto: HistorialDto, user: User) {
+    try {
+      const { mes, año } = historialDto;
+      const startDate = new Date(año, mes - 1, 1);
+      const endDate = new Date(año, mes , 0);
+
+      const entradas = await this.entradaRepository.find({
+        where: {
+          fecha: Between(startDate, endDate),
+          userid: Equal(user.id),
+        }
+      });
+
+      const salidas = await this.salidaRepository.find({
+        where: {
+          fecha: Between(startDate, endDate),
+          userid: Equal(user.id),
+        },
+      });
+
+      return {
+        message: 'Entradas obtenidas con éxito',
+        entradas: entradas,
+        salidas: salidas,
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener las entradas',
+        error: error.message,
+      }
+      
+    }
+  }
+
+  //trae todos los registros que se elijan segun el año
+  async findAllHistorialAnio(historialDto: HistorialDto, user: User) {
+    try {
+      const { año } = historialDto;
+      const startDate = new Date(año, 0, 1);
+      const endDate = new Date(año, 12, 0);
+
+      const entradas = await this.entradaRepository.find({
+        where: {
+          fecha: Between(startDate, endDate),
+          userid: Equal(user.id),
+        }
+      });
+
+      const salidas = await this.salidaRepository.find({
+        where: {
+          fecha: Between(startDate, endDate),
+          userid: Equal(user.id),
+        },
+      });
+
+      return {
+        message: 'Entradas obtenidas con éxito',
+        entradas: entradas,
+        salidas: salidas,
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener las entradas',
+        error: error.message,
+      }
+      
+    }
+  }
+
+  //balance del año que se elija
+  async sumhistorialAnio(historialDto: HistorialDto, user: User) {
+    try {
+      const { año } = historialDto;
+      const startDate = new Date(año, 0, 1);
+      const endDate = new Date(año, 12, 0);
+
+      const entradas = await this.entradaRepository.createQueryBuilder('entrada')
+        .select('SUM(entrada.valor)', 'total')
+        .where('entrada.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('entrada.userid = :userid', { userid: user.id })
+        .getRawOne();
+
+      const salidas = await this.salidaRepository.createQueryBuilder('salida')
+        .select('SUM(salida.valor)', 'total')
+        .where('salida.fecha BETWEEN :start AND :end', { start: startDate, end: endDate })
+        .andWhere('salida.userid = :userid', { userid: user.id })
+        .getRawOne();
+
+      const total = entradas.total - salidas.total;
+
+      return {
+        message: 'Historial obtenido con éxito',
+        data: {
+          entradas: entradas.total,
+          salidas: salidas.total,
+          total,
+        },
+      }
+    } catch (error) {
+      return {
+        message: 'Error al obtener el historial',
         error: error.message,
       }
       

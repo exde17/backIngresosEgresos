@@ -1,9 +1,10 @@
-import { IsNumber } from "class-validator";
+import { IsNumber, IsOptional } from "class-validator";
 
 export class HistorialDto{
 
     @IsNumber()
-    mes: number;
+    @IsOptional()
+    mes?: number;
 
     @IsNumber()
     año: number;

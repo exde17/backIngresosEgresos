@@ -29,6 +29,18 @@ export class EntradasController {
     return this.entradasService.totalSalidasMesActual(user);
   }
 
+  //sumas entradas del mes y año que se elija/////////////////////////------------------------------------------
+  @Post('totalEntradasHistorial')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalEntradasHistorial(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalEntradasHistorial(historialDto,user);
+  }
+
+  //------------------------------------------------------------------------------------------------------
+
   //el balance del mes y año que se elija
   @Post('historial')
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
@@ -37,6 +49,16 @@ export class EntradasController {
     @GetUser() user: User
     ){
     return this.entradasService.historial(historialDto,user);
+  }
+
+  //el balance del año que se elija
+  @Post('sumhistorialAnio')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async sumhistorialAnio(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+    ){
+    return this.entradasService.sumhistorialAnio(historialDto,user);
   }
 
   //sumas entradas del mes actual
@@ -57,18 +79,28 @@ export class EntradasController {
     return this.entradasService.findAllMesActual(user);
   }
 
-
-  //sumas entradas del mes y año que se elija
-  @Post('totalEntradasHistorial')
+  //trae todas los registros que se elijan segun el año y el mes
+  @Post('findAllEntrasHistorial')
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
-  async totalEntradasHistorial(
+  async findAllEntradasHistorial(
     @Body() historialDto: HistorialDto,
     @GetUser() user: User
-  ) {
-    return this.entradasService.totalEntradasHistorial(historialDto,user);
+  ){
+    return this.entradasService.findAllEntradasHistorial(historialDto,user);
   }
 
-  //sumas salidas del mes y año que se elija
+  //trae todos los registros que se elijan segun el año
+  @Post('findAllHistorialAnio')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async findAllEntradasHistorialAnio(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+  ){
+    return this.entradasService.findAllHistorialAnio(historialDto,user);
+  }
+
+
+  //sumas salidas del mes y año que se elija--------------------------------------------------
   @Post('totalSalidasHistorial')
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
   async totalSalidasHistorial(
@@ -77,6 +109,7 @@ export class EntradasController {
   ) {
     return this.entradasService.totalSalidasHistorial(historialDto,user);
   }
+  //-------------------------------------------------------------------------------------------
 
   @Post()
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
