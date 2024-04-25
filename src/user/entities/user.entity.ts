@@ -11,6 +11,7 @@ import {
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
 import { Entrada } from 'src/entradas/entities/entrada.entity';
 import { Salida } from 'src/salidas/entities/salida.entity';
+import { GastosFijo } from 'src/gastos-fijos/entities/gastos-fijo.entity';
 
 @Entity({
   name: 'users',
@@ -87,4 +88,7 @@ export class User {
 
   @OneToMany(() => Salida, (salida) => salida.userid)
   salidas: Salida[];
+
+  @OneToMany(() => Entrada, (entrada) => entrada.userid)
+  gastosFijos: GastosFijo;
 }

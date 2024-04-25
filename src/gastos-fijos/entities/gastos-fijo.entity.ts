@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/user/entities/user.entity";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('gastos-fijos')
 export class GastosFijo {
@@ -6,7 +7,7 @@ export class GastosFijo {
 id: string;
 
 @Column('text',{
-    nullable: false,
+    nullable: false, 
 })
 nombre: string;
 
@@ -14,4 +15,8 @@ nombre: string;
     nullable: false,
 })
 valor: number;
+
+@ManyToOne(() => User, user => user.gastosFijos)
+@JoinColumn({name: 'user_id'})
+usuario: User;
 }
