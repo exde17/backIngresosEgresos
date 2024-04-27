@@ -1,17 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateSalidaDto } from './dto/create-salida.dto';
 import { UpdateSalidaDto } from './dto/update-salida.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Salida } from './entities/salida.entity';
-import { Repository } from 'typeorm';
+import { Equal, Repository } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { GastosFijo } from 'src/gastos-fijos/entities/gastos-fijo.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class SalidasService {
   constructor(
     @InjectRepository(Salida)
     private readonly salidaRepository: Repository<Salida>,
+    @InjectRepository(GastosFijo)
+    private readonly gastosFijosRepository: Repository<GastosFijo>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) { }
+  private readonly logger = new Logger(SalidasService.name);
   async create(createSalidaDto: CreateSalidaDto, user: User) {
     try {
       const salida = this.salidaRepository.create({
@@ -133,6 +140,43 @@ export class SalidasService {
         error: error.message,
       }
       
+    }
+  }
+
+  //funcion que verifica al iniciar un nuevo mes para crear los gastos fijos en salida
+  // @Cron('*/2 * * * *') // cada 2 minutos
+  @Cron('0 0 1 * *')
+  async createSalidaMesActual() {
+    try {
+      // Obtener todos los usuarios
+      const users = await this.userRepository.find();
+      console.log(users);
+
+      for (const user of users) {
+        const now = new Date();
+        const month = now.getMonth();
+        const year = now.getFullYear();
+    
+        const startDate = new Date(year, month, 1);
+    
+        // Obtener todos los gastos fijos del usuario
+        const gastosFijos = await this.gastosFijosRepository.find({ where: { usuario: Equal(user.id) } });
+    
+        // Para cada gasto fijo, crear una nueva salida
+        for (const gastoFijo of gastosFijos) {
+          const nuevaSalida = new Salida();
+          // nuevaSalida.fecha = startDate;
+          nuevaSalida.nombre = gastoFijo.nombre;
+          nuevaSalida.valor = gastoFijo.valor;
+          nuevaSalida.userid = user;
+          await this.salidaRepository.save(nuevaSalida);
+        }
+      }
+
+      this.logger.debug('Salidas creadas para este mes');
+
+    } catch (error) {
+      this.logger.error('Error al crear las salidas', error.stack);
     }
   }
 }

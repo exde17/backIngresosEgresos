@@ -16,7 +16,17 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // Configura las opciones de CORS
+app.enableCors({
+  origin: ['http://localhost:3000', 'http://localhost:3001','https://serveringresosegresos.azurewebsites.net'], 
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+});
+
   await app.listen(process.env.PORT || 3000);
   logger.log(`Application is running on: ${process.env.PORT || 3000}`);
 }
 bootstrap();
+
+//https://serveringresosegresos.azurewebsites.net

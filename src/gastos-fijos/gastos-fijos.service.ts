@@ -5,12 +5,15 @@ import { Repository } from 'typeorm';
 import { GastosFijo } from './entities/gastos-fijo.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { Salida } from 'src/salidas/entities/salida.entity';
 
 @Injectable()
 export class GastosFijosService {
   constructor(
     @InjectRepository(GastosFijo)
     private gastosFijosRepository: Repository<GastosFijo>,
+    @InjectRepository(Salida)
+    private salidasRepository: Repository<Salida>,
   ) {}
   
   async create(createGastosFijoDto: CreateGastosFijoDto, user: User) {
@@ -21,6 +24,14 @@ export class GastosFijosService {
         });
 
       await this.gastosFijosRepository.save(gastoFijo);
+
+      // creo el gasto fijo tambien en la salida
+      const salida = this.salidasRepository.create({
+        ...createGastosFijoDto,
+        userid: user
+        });
+
+      await this.salidasRepository.save(salida);
 
       return {
         message: 'Gasto fijo creado con éxito',
