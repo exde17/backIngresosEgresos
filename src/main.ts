@@ -19,7 +19,7 @@ async function bootstrap() {
 
   // Configura las opciones de CORS
 app.enableCors({
-  origin: ['http://localhost:3000', 'http://localhost:3001','https://serveringresosegresos.azurewebsites.net'], 
+  origin: ['http://localhost:3000', 'http://localhost:3001','https://backingresosegresos.azurewebsites.net'], 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
 });
