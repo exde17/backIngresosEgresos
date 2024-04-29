@@ -1,8 +1,8 @@
 {
-  "name": "manage-school",
+  "name": "ingresos-egresos",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "mario begambre",
   "private": true,
   "license": "UNLICENSED",
   "engines": {
@@ -38,8 +38,9 @@
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.11.3",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.2.2",
     "rxjs": "^7.2.0",
+    "superagent": "^9.0.1",
     "typeorm": "^0.3.20",
     "yarn": "^1.22.19"
   },
