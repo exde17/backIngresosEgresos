@@ -324,6 +324,7 @@ export class EntradasService {
         data: salidas.total,
       }
     } catch (error) {
+      console.log(error)
       return {
         message: 'Error al obtener el total de salidas',
         error: error.message,

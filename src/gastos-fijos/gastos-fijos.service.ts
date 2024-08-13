@@ -50,7 +50,9 @@ export class GastosFijosService {
     try {
       return await this.gastosFijosRepository.find();
     } catch (error) {
+      console.log(error);
       return {
+        
         message: 'Error al obtener los gastos fijos',
         error,
       }

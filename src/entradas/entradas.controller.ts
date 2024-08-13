@@ -20,6 +20,18 @@ export class EntradasController {
     return this.entradasService.total(user);
   }
 
+  //sumas salidas del mes y año que se elija--------------------------------------------------
+  @Post('totalSalidasHistorial')
+  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
+  async totalSalidasHistorial(
+    @Body() historialDto: HistorialDto,
+    @GetUser() user: User
+  ) {
+    return this.entradasService.totalSalidasHistorial(historialDto,user);
+  }
+  //-------------------------------------------------------------------------------------------
+
+
   //sumas salidas del mes actual
   @Get('totalSalidasMesActual')
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
@@ -100,17 +112,7 @@ export class EntradasController {
   }
 
 
-  //sumas salidas del mes y año que se elija--------------------------------------------------
-  @Post('totalSalidasHistorial')
-  @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
-  async totalSalidasHistorial(
-    @Body() historialDto: HistorialDto,
-    @GetUser() user: User
-  ) {
-    return this.entradasService.totalSalidasHistorial(historialDto,user);
-  }
-  //-------------------------------------------------------------------------------------------
-
+  
   @Post()
   @Auth(ValidRoles.admin, ValidRoles.user, ValidRoles.superUser)
   async create(
